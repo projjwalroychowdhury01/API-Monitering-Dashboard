@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+httpx
+apscheduler
+python-dotenv
+loguru
+pydantic-settings
