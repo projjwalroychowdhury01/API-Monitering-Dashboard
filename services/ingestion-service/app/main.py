@@ -4,7 +4,9 @@ from contextlib import asynccontextmanager
 
 from app.config import settings
 from app.logger import logger #type: ignore
-from app.routes import health, ingest
+from app.routes import health
+import app.routes.ingest as ingest
+from app.kafka.simple_producer import create_producer
 
 
 def create_app() -> FastAPI:
@@ -12,27 +14,18 @@ def create_app() -> FastAPI:
     App factory to initialize FastAPI with common middleware and routes.
     """
 
-    @asynccontextmanager
-    async def lifespan(app: FastAPI):
-        # 🔹 STARTUP
-        logger.info( #type: ignore
-            "Service starting",
-            extra={"service": settings.SERVICE_NAME}
-        )
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # STARTUP
+    app.state.producer = create_producer()
 
-        # Future: initialize Kafka producer here
-        # app.state.producer = init_producer()
+    yield
 
-        yield
+    # SHUTDOWN
+    app.state.producer.close()
 
-        # 🔹 SHUTDOWN
-        logger.info( #type: ignore
-            "Service shutting down",
-            extra={"service": settings.SERVICE_NAME}
-        )
-
-        # Future: close Kafka producer here
-        # app.state.producer.close()
+    # Future: close Kafka producer here
+    # app.state.producer.close()
 
     app = FastAPI(
         title=settings.SERVICE_NAME.replace("-", " ").title(),
@@ -54,7 +47,6 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(ingest.router)
 
-    return app
 
 
 app = create_app()
