@@ -11,7 +11,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-docs/
+
 downloads/
 eggs/
 .eggs/
@@ -209,3 +209,4 @@ marimo/_lsp/
 __marimo__/
 
 .continue
+docs/
