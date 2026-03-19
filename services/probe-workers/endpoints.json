@@ -1,0 +1,8 @@
+{
+  "endpoints": [
+    {
+      "id": "google-test",
+      "url": "https://google.com"
+    }
+  ]
+}
