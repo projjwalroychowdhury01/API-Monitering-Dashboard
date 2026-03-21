@@ -4,7 +4,7 @@ import logging
 
 class Settings(BaseSettings):
     # Kafka
-    kafka_broker_url: str = Field(default="localhost:9092", env="KAFKA_BROKER_URL")
+    kafka_broker_url: str = Field(default="localhost:29092", env="KAFKA_BROKER_URL")
     kafka_topic_raw: str = Field(default="metrics_raw", env="KAFKA_TOPIC_RAW")
     kafka_group_id: str = Field(default="aggregation_service_group", env="KAFKA_GROUP_ID")
 

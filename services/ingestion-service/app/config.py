@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
 
     # Kafka settings
-    KAFKA_BOOTSTRAP_SERVERS: str = "localhost:9092"
+    KAFKA_BOOTSTRAP_SERVERS: str = "localhost:29092"
     KAFKA_TOPIC_METRICS: str = "metrics_raw"
 
     model_config = SettingsConfigDict(
