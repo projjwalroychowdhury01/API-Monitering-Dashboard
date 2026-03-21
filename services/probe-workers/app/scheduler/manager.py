@@ -8,6 +8,7 @@ from ..metrics.collector import MetricsCollector, ProbeResult
 from ..config import settings
 from ..logger import log
 from datetime import datetime
+import httpx
 
 class ProbeScheduler:
     def __init__(self):
@@ -15,6 +16,8 @@ class ProbeScheduler:
         self.probe = HttpProbe()
         self.collector = MetricsCollector()
         self.interval = settings.PROBE_INTERVAL_SECONDS
+        self.client = httpx.AsyncClient(timeout=5.0)
+        self.semaphore = asyncio.Semaphore(20)  # limit concurrency
 
         # Configurable endpoints loaded from endpoints.json / env
         self.endpoints: List[Dict[str, str]] = self._validate_endpoints(settings.ENDPOINTS)
@@ -49,6 +52,30 @@ class ProbeScheduler:
         # Currently, we just log the structured telemetry
         log.info(f"Probe Result for {endpoint_id}: status={result.status_code}, latency={result.latency:.4f}s")
         # In a real-world scenario, we'd send this to the Ingestion Gateway here.
+
+    async def _send_telemetry(self, telemetry):
+        ingest_url ="http://127.0.0.1:8000/ingest/metrics"
+
+        data = telemetry.model_dump()
+        data["timestamp"] = int(data["timestamp"].timestamp())
+
+        payload = [data]
+
+        async with self.semaphore:   # 🔥 control concurrency
+            try:
+                resp = await self.client.post(ingest_url, json=payload)
+                print("STATUS:", resp.status_code)   # 👈 ADD
+                print("RESPONSE:", resp.text) 
+                
+                if resp.status_code >= 400:
+                    log.debug(f"Telemetry POST returned status {resp.status_code}")
+
+            except Exception as e:
+                log.debug("Telemetry POST failed (silent)")
+                print("HTTP ERROR:", str(e)) 
+
+    async def close(self):
+        await self.client.aclose()
 
     def start(self):
         # Schedule probe jobs for all configured endpoints
@@ -88,16 +115,22 @@ class ProbeScheduler:
                 # Execute all probes in parallel (non-blocking)
                 results = await asyncio.gather(*tasks, return_exceptions=True)
 
+                telemetry_tasks = []
+
                 for result in results:
                     if isinstance(result, Exception):
                         log.error(f"Probe execution failed: {str(result)}")
                         continue
-
-                    # Enrich raw results into final telemetry schema
+                    
                     probe_result = cast(ProbeResult, result)
                     telemetry = self.collector.collect(probe_result)
 
-                    log.info(f"PROBE_METRIC | {telemetry.model_dump_json()}")
+                    log.info(f"SENDING TELEMETRY: {telemetry.model_dump()}") 
+
+                    telemetry_tasks.append(self._send_telemetry(telemetry))
+
+                # 🔥 execute with control
+                await asyncio.gather(*telemetry_tasks, return_exceptions=True)
 
             except Exception as e:
                 log.error(f"Error in scheduler loop: {str(e)}")
