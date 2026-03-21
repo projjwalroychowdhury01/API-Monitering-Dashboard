@@ -1,50 +1,31 @@
-import asyncio
-from fastapi import FastAPI
-from contextlib import asynccontextmanager
-from app.config import logger
+import logging
+from app.kafka.consumer import consume
 from app.aggregators.window_manager import WindowManager
-from app.storage.clickhouse_writer import ClickHouseWriter
-from app.kafka.consumer import MetricsConsumer
+from app.aggregators.metrics_calculator import calculate_metrics
+from app.storage.clickhouse_writer import insert_metrics
 
-class AggregationApp:
-    def __init__(self):
-        self.writer = ClickHouseWriter()
-        self.window_manager = WindowManager()
-        self.consumer = MetricsConsumer(
-            window_manager=self.window_manager,
-            clickhouse_writer=self.writer
-        )
+# Re-use logger configuration from the project but simple loop based logic
+from app.config import logger
 
-app_instance = AggregationApp()
+wm = WindowManager(window_size=60)
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    logger.info("Starting up Aggregation Service...")
-    consumer_task = asyncio.create_task(app_instance.consumer.start())
-    yield
-    # Shutdown
-    logger.info("Shutting down Aggregation Service...")
-    await app_instance.consumer.stop()
-    consumer_task.cancel()
-    try:
-        await consumer_task
-    except asyncio.CancelledError:
-        pass
+def run():
+    logger.info("Starting Aggregation Service main loop...")
+    for event in consume():
+        wm.add_event(event)
 
-app = FastAPI(
-    title="Aggregation Service",
-    description="Aggregates metrics from Kafka and flushes to ClickHouse",
-    version="1.0.0",
-    lifespan=lifespan
-)
+        if wm.should_flush():
+            data = wm.flush()
+            logger.info(f"Flushing {len(data)} endpoints to ClickHouse")
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint required by architecture rules."""
-    return {"status": "ok", "service": "aggregation-service"}
+            for endpoint, events in data.items():
+                metrics = calculate_metrics(events)
+                insert_metrics(endpoint, metrics)
 
-# Provide entry point for running directly if needed
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8002, reload=True)
+    try:
+        run()
+    except KeyboardInterrupt:
+        logger.info("Service stopped gracefully.")
+    except Exception as e:
+        logger.error(f"Service interrupted by error: {e}")
