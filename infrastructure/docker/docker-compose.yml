@@ -1,5 +1,3 @@
-version: '4.66'
-
 services:
 
   zookeeper:
@@ -34,6 +32,8 @@ services:
     ports:
       - "8123:8123"
       - "9000:9000"
+    volumes:
+      - ./clickhouse/default.xml:/etc/clickhouse-server/users.d/10-no-password.xml
 
   redis:
     image: redis:7
