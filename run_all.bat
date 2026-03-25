@@ -11,7 +11,7 @@ echo ==============================
 start cmd /k "cd /d "%DOCKER_PATH%" && docker-compose up"
 
 echo Waiting for Kafka + ClickHouse to be ready...
-timeout /t 25
+timeout /t 30
 
 echo ==============================
 echo Ensuring ClickHouse Table
@@ -25,7 +25,7 @@ echo ==============================
 
 start cmd /k "cd /d "%PROJECT_ROOT%\services\ingestion-service" && call "%PROJECT_ROOT%\venv\Scripts\activate" && python -m uvicorn app.main:app --reload"
 
-timeout /t 5
+timeout /t 30
 
 echo ==============================
 echo Starting Probe Workers
@@ -33,7 +33,7 @@ echo ==============================
 
 start cmd /k "cd /d "%PROJECT_ROOT%\services\probe-workers" && call "%PROJECT_ROOT%\venv\Scripts\activate" && python -m app.main"
 
-timeout /t 5
+timeout /t 30
 
 echo ==============================
 echo Starting Aggregation Service
