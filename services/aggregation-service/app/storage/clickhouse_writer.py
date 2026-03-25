@@ -1,4 +1,5 @@
 from clickhouse_driver import Client
+from datetime import datetime
 import time
 
 client = Client(
@@ -27,7 +28,7 @@ def insert_metrics(endpoint_id, metrics):
         """,
         [(
             endpoint_id,
-            int(time.time()),
+            datetime.utcnow(),
             metrics["p50"],
             metrics["p95"],
             metrics["p99"],
@@ -44,7 +45,7 @@ def insert_metrics_batch(batch_data):
     if not batch_data:
         return
 
-    timestamp = int(time.time())
+    timestamp = datetime.utcnow()
     
     values = [
         (
