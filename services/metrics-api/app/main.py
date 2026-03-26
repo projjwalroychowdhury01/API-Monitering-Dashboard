@@ -1,39 +1,34 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
-from app.logger import logger
-from app.routes import health
+from app.routes.metrics import router as metrics_router
 
-def create_app() -> FastAPI:
-    """
-    App factory to initialize FastAPI with common middleware and routes.
-    """
-    app = FastAPI(
-        title=settings.SERVICE_NAME.replace("-", " ").title(),
-        description=f"Service for {settings.SERVICE_NAME}",
-        version="0.1.0",
-        debug=settings.DEBUG
-    )
+app = FastAPI(
+    title="Metrics API",
+    description="API for fetching observability metrics",
+    version="1.0.0"
+)
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+# Enforce secure CORS policy: whitelist only trusted domains from environment
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
-    # Register standardized routes
-    app.include_router(health.router)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
-    @app.on_event("startup")
-    async def startup():
-        logger.info(f"Service {settings.SERVICE_NAME} starting...")
+# Include the metrics router
+app.include_router(metrics_router)
 
-    @app.on_event("shutdown")
-    async def shutdown():
-        logger.info(f"Service {settings.SERVICE_NAME} shutting down...")
-
-    return app
-
-app = create_app()
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "success",
+        "data": {
+            "status": "healthy"
+        }
+    }

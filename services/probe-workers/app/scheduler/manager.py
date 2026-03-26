@@ -54,7 +54,7 @@ class ProbeScheduler:
         # In a real-world scenario, we'd send this to the Ingestion Gateway here.
 
     async def _send_telemetry(self, telemetry):
-        ingest_url ="http://127.0.0.1:8000/ingest/metrics"
+        ingest_url ="http://127.0.0.1:8001/ingest/metrics"
 
         data = telemetry.model_dump()
         data["timestamp"] = int(data["timestamp"].timestamp())
