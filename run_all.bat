@@ -30,7 +30,7 @@ echo ==============================
 echo Starting Ingestion Service
 echo ==============================
 
-start cmd /k "cd /d "%PROJECT_ROOT%\services\ingestion-service" && call "%PROJECT_ROOT%\venv\Scripts\activate" && python -m uvicorn app.main:app --reload"
+start cmd /k "cd /d "%PROJECT_ROOT%\services\ingestion-service" && call "%PROJECT_ROOT%\venv\Scripts\activate" && python -m uvicorn app.main:app --reload --port 8001"
 
 timeout /t 30
 
