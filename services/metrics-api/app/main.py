@@ -1,7 +1,7 @@
 import os
+import traceback
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes.metrics import router as metrics_router
 
 app = FastAPI(
     title="Metrics API",
@@ -21,8 +21,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include the metrics router
-app.include_router(metrics_router)
+# Include the metrics router — surface import errors immediately
+try:
+    from app.routes.metrics import router as metrics_router
+    app.include_router(metrics_router)
+except Exception:
+    # Print full traceback so the cause is visible in the uvicorn terminal
+    traceback.print_exc()
+    raise RuntimeError(
+        "Failed to load metrics router. "
+        "Check the traceback above for the root cause."
+    )
 
 @app.get("/health")
 async def health_check():
