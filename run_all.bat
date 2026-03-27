@@ -49,6 +49,21 @@ echo ==============================
 start cmd /k "cd /d "%PROJECT_ROOT%\services\aggregation-service" && call "%PROJECT_ROOT%\venv\Scripts\activate" && python -m app.main"
 
 echo ==============================
+echo Starting Metrics API Service
+echo ==============================
+
+start cmd /k "cd /d "%PROJECT_ROOT%\services\metrics-api" && call "%PROJECT_ROOT%\venv\Scripts\activate" && uvicorn app.main:app --reload --port 8002"
+
+echo Waiting for Metrics API to be ready...
+timeout /t 10
+
+echo ==============================
+echo Starting Dashboard
+echo ==============================
+
+start cmd /k "cd /d "%PROJECT_ROOT%\frontend\dashboard" && npm run dev"
+
+echo ==============================
 echo ALL SERVICES STARTED SUCCESSFULLY
 echo ==============================
 
