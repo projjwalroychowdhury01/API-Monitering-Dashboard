@@ -5,9 +5,9 @@ from app.aggregators.metrics_calculator import calculate_metrics
 from app.storage.clickhouse_writer import insert_metrics
 
 # Re-use logger configuration from the project but simple loop based logic
-from app.config import logger
+from app.config import logger, settings
 
-wm = WindowManager(window_size=60)
+wm = WindowManager(window_size=settings.aggregation_window_seconds)
 
 def run():
     logger.info("Starting Aggregation Service main loop...")

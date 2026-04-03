@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     
     # App config
     log_level: str = Field(default="INFO", env="LOG_LEVEL")
-    aggregation_window_seconds: int = Field(default=60, env="AGGREGATION_WINDOW_SECONDS")
+    aggregation_window_seconds: int = Field(default=30, env="AGGREGATION_WINDOW_SECONDS")
 
     model_config = SettingsConfigDict(
         env_file=".env",
