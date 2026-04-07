@@ -4,14 +4,17 @@
 
 from typing import List
 
+from app.alert import Alert
 
-def send_alerts(endpoint_id: str, alerts: List[str]) -> None:
+
+def send_alerts(endpoint_id: str, alerts: List[Alert]) -> None:
     """
     Print each alert to stdout in the canonical format:
 
-        [ALERT] <endpoint_id> | <message>
+        [ALERT:WARNING]  <endpoint_id> | <message>
+        [ALERT:CRITICAL] <endpoint_id> | <message>
 
     Does nothing if `alerts` is empty.
     """
-    for message in alerts:
-        print(f"[ALERT] {endpoint_id} | {message}")
+    for alert in alerts:
+        print(f"[ALERT:{alert.severity}] {endpoint_id} | {alert.message}")
