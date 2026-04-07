@@ -1,20 +1,4 @@
-import os
-from pydantic_settings import BaseSettings, SettingsConfigDict
+# config.py
+# Central configuration for the Alert Engine service.
 
-class Settings(BaseSettings):
-    """
-    Base configuration for any microservice.
-    Overridable via environment variables or .env file.
-    """
-    SERVICE_NAME: str = "base-service"
-    ENVIRONMENT: str = "development"
-    DEBUG: bool = False
-    PORT: int = 8000
-
-    model_config = SettingsConfigDict(
-        env_file=".env", 
-        env_file_encoding="utf-8",
-        extra="ignore"
-    )
-
-settings = Settings()
+POLL_INTERVAL = 60  # seconds between each metrics poll cycle
