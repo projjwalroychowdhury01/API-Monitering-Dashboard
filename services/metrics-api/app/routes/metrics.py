@@ -8,7 +8,7 @@ router = APIRouter()
 @router.get("/metrics/latency")
 async def get_latency_metrics(
     endpoint_id: str = Query(..., min_length=1, description="The ID of the endpoint"),
-    minutes: int = Query(60, gt=0, le=1440, description="Time range in minutes")
+    minutes: int = Query(60, gt=0, le=240, description="Time range in minutes")
 ) -> Dict[str, Any]:
     cache_key = f"metrics:latency:{endpoint_id}:{minutes}"
     
@@ -25,7 +25,7 @@ async def get_latency_metrics(
         db_result = get_endpoint_metrics(endpoint_id, minutes)
         
         # Store in cache
-        cache_set(cache_key, db_result, ttl=60)
+        cache_set(cache_key, db_result, ttl=30)
         
         # Return result
         return {

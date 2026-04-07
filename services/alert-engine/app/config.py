@@ -1,20 +1,27 @@
+# config.py
+# Runtime configuration for the Alert Engine.
+# Every value can be overridden via an environment variable.
+# No third-party libraries — stdlib os only.
+
 import os
-from pydantic_settings import BaseSettings, SettingsConfigDict
 
-class Settings(BaseSettings):
-    """
-    Base configuration for any microservice.
-    Overridable via environment variables or .env file.
-    """
-    SERVICE_NAME: str = "base-service"
-    ENVIRONMENT: str = "development"
-    DEBUG: bool = False
-    PORT: int = 8000
+# ---------------------------------------------------------------------------
+# Polling
+# ---------------------------------------------------------------------------
 
-    model_config = SettingsConfigDict(
-        env_file=".env", 
-        env_file_encoding="utf-8",
-        extra="ignore"
-    )
+# Seconds between each metrics poll cycle.
+POLL_INTERVAL: int = int(os.getenv("POLL_INTERVAL", "60"))
 
-settings = Settings()
+# ---------------------------------------------------------------------------
+# Alert deduplication
+# ---------------------------------------------------------------------------
+
+# Seconds to suppress a repeated alert for the same (endpoint, type) pair.
+ALERT_COOLDOWN: int = int(os.getenv("ALERT_COOLDOWN", "300"))
+
+# ---------------------------------------------------------------------------
+# ClickHouse connection
+# ---------------------------------------------------------------------------
+
+CLICKHOUSE_HOST: str = os.getenv("CLICKHOUSE_HOST", "localhost")
+CLICKHOUSE_PORT: int = int(os.getenv("CLICKHOUSE_PORT", "9000"))

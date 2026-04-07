@@ -223,7 +223,8 @@ export default function DashboardPage() {
     abortCtrlRef.current = ctrl;
 
     fetchMetrics(ctrl.signal);
-    intervalRef.current = setInterval(() => fetchMetrics(ctrl.signal), 5000);
+    intervalRef.current = setInterval(() => fetchMetrics(ctrl.signal), 1000);
+
     return () => {
       ctrl.abort();
       clearInterval(intervalRef.current);
@@ -343,7 +344,7 @@ export default function DashboardPage() {
                   width: "100%",
                 }}
               >
-                {[5, 15, 30, 60, 360, 1440].map((m) => (
+                {[1, 5, 15, 30, 60, 240].map((m) => (
                   <option key={m} value={m}>
                     {m >= 60 ? `${m / 60}h` : `${m}m`}
                   </option>
