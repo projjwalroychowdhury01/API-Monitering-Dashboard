@@ -1,25 +1,66 @@
+/* ═══════════════════════════════════════════════════════════
+   globals.css — Stitch "High-End Editorial Data Experience"
+   Primary: #005eb8 · Light mode · Inter · Round-4
+   ═══════════════════════════════════════════════════════════ */
+
 @import "tailwindcss";
 
-/* ── Design tokens ─────────────────────────────────────────── */
+/* ── Design tokens (Stitch named-colour palette) ─────────── */
 :root {
-  --bg-base:       #07090f;
-  --bg-surface:    rgba(255, 255, 255, 0.04);
-  --bg-surface-hv: rgba(255, 255, 255, 0.07);
-  --border:        rgba(255, 255, 255, 0.08);
-  --border-hv:     rgba(255, 255, 255, 0.16);
-  --text-primary:  #f1f5f9;
-  --text-muted:    #64748b;
-  --text-faint:    #334155;
-  --accent:        #6366f1;
-  --radius-card:   1rem;
+  /* Surfaces — layered depth (Level 0 → Level 2) */
+  --bg-base:             #f8f9fa;   /* background */
+  --surface:             #f8f9fa;   /* surface */
+  --surface-low:         #f1f4f5;   /* surface_container_low  — L1 sections */
+  --surface-container:   #ebeef0;   /* surface_container */
+  --surface-high:        #e5e9eb;   /* surface_container_high */
+  --surface-card:        #ffffff;   /* surface_container_lowest — L2 cards */
+  --surface-dim:         #d5dbdd;
+
+  /* Primary */
+  --primary:             #005eb8;
+  --primary-container:   #609efc;
+  --primary-dim:         #0052a2;
+  --on-primary:          #f8f8ff;
+  --on-primary-container:#002045;
+
+  /* Text */
+  --on-surface:          #2d3335;
+  --on-surface-variant:  #5a6062;
+  --on-bg:               #2d3335;
+
+  /* Borders */
+  --outline:             #767c7e;
+  --outline-variant:     #adb3b5;  /* ghost border at 15 % opacity */
+
+  /* Secondary */
+  --secondary:           #565f72;
+  --secondary-container: #d9e3f9;
+  --on-secondary-container: #495264;
+
+  /* Status */
+  --error:               #a83836;
+  --error-container:     #fa746f;
+  --on-error:            #fff7f6;
+  --success:             #1a7a4a;
+
+  /* Typography scale */
+  --text-display:  2.75rem;   /* hero metric */
+  --text-headline: 1.5rem;    /* section title */
+  --text-title:    1.125rem;  /* card header */
+  --text-body:     0.875rem;  /* body / description */
+  --text-label:    0.6875rem; /* all-caps technical label */
+
+  /* Radii */
+  --radius-card: 0.375rem;    /* md — cards & buttons */
+  --radius-chip: 9999px;      /* full — pills / badges */
+
+  /* Shadows (ambient — never heavy drop-shadow) */
+  --shadow-card:   0 12px 32px -4px rgba(45,51,53,0.06);
+  --shadow-float:  0 0 24px 0px rgba(45,51,53,0.08);
 }
 
-/* ── Base ──────────────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/* ── Reset ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
   scroll-behavior: smooth;
@@ -29,7 +70,7 @@ html {
 body {
   margin: 0;
   background: var(--bg-base);
-  color: var(--text-primary);
+  color: var(--on-surface);
   font-family: "Inter", system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.6;
@@ -37,17 +78,37 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Typography helpers ────────────────────────────────────── */
+/* ── Headings ────────────────────────────────────────────── */
 h1, h2, h3, h4 {
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.02em;
   margin: 0;
+  color: var(--on-surface);
 }
-
 p { margin: 0; }
 
-/* ── Scrollbar ─────────────────────────────────────────────── */
+/* ── Links ───────────────────────────────────────────────── */
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-hv); border-radius: 9999px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(118,124,126,0.35);
+  border-radius: 9999px;
+}
+
+/* ── Keyframes ───────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
