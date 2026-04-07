@@ -7,12 +7,12 @@ import LatencyChart from "../components/LatencyChart";
 // ─── Tokens (mirror globals.css vars for inline styles) ──────────────────────
 
 const T = {
-  surface:   "rgba(255,255,255,0.04)",
+  surface: "rgba(255,255,255,0.04)",
   surfaceHv: "rgba(255,255,255,0.07)",
-  border:    "rgba(255,255,255,0.08)",
-  borderHv:  "rgba(255,255,255,0.16)",
-  muted:     "#64748b",
-  faint:     "#334155",
+  border: "rgba(255,255,255,0.08)",
+  borderHv: "rgba(255,255,255,0.16)",
+  muted: "#64748b",
+  faint: "#334155",
 };
 
 // ─── MetricCard ───────────────────────────────────────────────────────────────
@@ -169,18 +169,18 @@ function StatusBadge({ loading, error, lastUpdated }) {
 // ─── DashboardPage ────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const [endpointId, setEndpointId]   = useState("google-test");
-  const [inputValue, setInputValue]   = useState("google-test");
-  const [minutes, setMinutes]         = useState(60);
-  const [metrics, setMetrics]         = useState(null);
-  const [history, setHistory]         = useState([]);
-  const [loading, setLoading]         = useState(false);
-  const [error, setError]             = useState(null);
+  const [endpointId, setEndpointId] = useState("google-test");
+  const [inputValue, setInputValue] = useState("google-test");
+  const [minutes, setMinutes] = useState(60);
+  const [metrics, setMetrics] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  const intervalRef   = useRef(null);
+  const intervalRef = useRef(null);
   const isFetchingRef = useRef(false);
-  const abortCtrlRef  = useRef(null);
+  const abortCtrlRef = useRef(null);
 
   const MAX_HISTORY = 30;
 
@@ -224,7 +224,6 @@ export default function DashboardPage() {
 
     fetchMetrics(ctrl.signal);
     intervalRef.current = setInterval(() => fetchMetrics(ctrl.signal), 5000);
-
     return () => {
       ctrl.abort();
       clearInterval(intervalRef.current);
@@ -318,8 +317,8 @@ export default function DashboardPage() {
                   width: "100%",
                   transition: "border-color 0.2s",
                 }}
-                onFocus={(e)  => (e.target.style.borderColor = "#6366f1")}
-                onBlur={(e)   => (e.target.style.borderColor = T.border)}
+                onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                onBlur={(e) => (e.target.style.borderColor = T.border)}
               />
             </div>
 
@@ -369,8 +368,8 @@ export default function DashboardPage() {
               }}
               onMouseEnter={(e) => (e.currentTarget.style.background = "#4f46e5")}
               onMouseLeave={(e) => (e.currentTarget.style.background = "#6366f1")}
-              onMouseDown={(e)  => (e.currentTarget.style.transform = "scale(0.97)")}
-              onMouseUp={(e)    => (e.currentTarget.style.transform = "scale(1)")}
+              onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               Apply
             </button>
@@ -404,9 +403,9 @@ export default function DashboardPage() {
               <span id="latency-heading">Latency Percentiles</span>
             </SectionHeading>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(14rem, 1fr))", gap: "1rem" }}>
-              <MetricCard label="P50 — Median"    value={fmt(metrics?.p50)} accent="#6366f1" note="Typical response time" />
-              <MetricCard label="P95"              value={fmt(metrics?.p95)} accent="#a855f7" note="95th percentile" />
-              <MetricCard label="P99 — Tail"       value={fmt(metrics?.p99)} accent="#ec4899" note="Worst-case latency" />
+              <MetricCard label="P50 — Median" value={fmt(metrics?.p50)} accent="#6366f1" note="Typical response time" />
+              <MetricCard label="P95" value={fmt(metrics?.p95)} accent="#a855f7" note="95th percentile" />
+              <MetricCard label="P99 — Tail" value={fmt(metrics?.p99)} accent="#ec4899" note="Worst-case latency" />
             </div>
           </section>
 
