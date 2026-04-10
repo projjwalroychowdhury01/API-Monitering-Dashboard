@@ -8,27 +8,12 @@ import LatencyChart from "../components/LatencyChart";
 // Stitch "High-End Editorial Data Experience" — Light mode, primary #005eb8
 
 const T = {
-  bgBase:          "#f8f9fa",
-  surface:         "#f8f9fa",
-  surfaceLow:      "#f1f4f5",   // L1 — section grouping
-  surfaceCard:     "#ffffff",   // L2 — individual cards
-  surfaceHigh:     "#e5e9eb",
-  primary:         "#005eb8",
-  primaryContainer:"#609efc",
-  onPrimary:       "#f8f8ff",
-  onSurface:       "#2d3335",
-  onSurfaceVar:    "#5a6062",
-  outline:         "#767c7e",
-  outlineVar:      "#adb3b5",
-  secondaryCont:   "#d9e3f9",
-  onSecondaryCont: "#495264",
-  error:           "#a83836",
-  errorCont:       "#fa746f",
-  success:         "#1a7a4a",
-  // Ghost border = outlineVar at 15 % opacity
-  ghostBorder:     "rgba(173,179,181,0.15)",
-  // Ambient shadow
-  shadow: "0 12px 32px -4px rgba(45,51,53,0.06)",
+  surface: "rgba(255,255,255,0.04)",
+  surfaceHv: "rgba(255,255,255,0.07)",
+  border: "rgba(255,255,255,0.08)",
+  borderHv: "rgba(255,255,255,0.16)",
+  muted: "#64748b",
+  faint: "#334155",
 };
 
 // ─── MetricCard ───────────────────────────────────────────────────────────────
@@ -194,19 +179,18 @@ function Chip({ loading, error, lastUpdated }) {
 // ─── DashboardPage ────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
-  const [endpointId, setEndpointId]   = useState("google-test");
-  const [inputValue, setInputValue]   = useState("google-test");
-  const [minutes, setMinutes]         = useState(60);
-  const [metrics, setMetrics]         = useState(null);
-  const [history, setHistory]         = useState([]);
-  const [loading, setLoading]         = useState(false);
-  const [error, setError]             = useState(null);
+  const [endpointId, setEndpointId] = useState("google-test");
+  const [inputValue, setInputValue] = useState("google-test");
+  const [minutes, setMinutes] = useState(60);
+  const [metrics, setMetrics] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  const intervalRef   = useRef(null);
+  const intervalRef = useRef(null);
   const isFetchingRef = useRef(false);
-  const abortCtrlRef  = useRef(null);
-  const MAX_HISTORY   = 30;
+  const abortCtrlRef = useRef(null);
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
 
@@ -432,14 +416,8 @@ export default function DashboardPage() {
                   width: "100%",
                   transition: "border-color 0.2s, box-shadow 0.2s",
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = T.primary;
-                  e.target.style.boxShadow = `0 0 0 4px rgba(96,158,252,0.15)`;
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = T.ghostBorder;
-                  e.target.style.boxShadow = "none";
-                }}
+                onFocus={(e) => (e.target.style.borderColor = "#6366f1")}
+                onBlur={(e) => (e.target.style.borderColor = T.border)}
               />
             </div>
 
@@ -496,8 +474,8 @@ export default function DashboardPage() {
                 transition: "opacity 0.15s, transform 0.1s",
                 flexShrink: 0,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#4f46e5")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "#6366f1")}
               onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.97)")}
               onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
@@ -529,63 +507,37 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* ── Performance Snapshot ── */}
-        <section
-          aria-labelledby="snapshot-heading"
-          style={{
-            background: T.surfaceLow,
-            borderRadius: "var(--radius-card, 0.375rem)",
-            padding: "1.75rem",
-            marginBottom: "2rem",
-            animation: "fadeIn 0.6s ease both",
-          }}
-        >
-          <SectionLabel id="snapshot-heading">Performance Snapshot</SectionLabel>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))",
-              gap: "1rem",
-            }}
-          >
+        {/* ── Latency percentile cards ── */}
+        <section aria-labelledby="latency-heading">
+          <SectionHeading>
+            <span id="latency-heading">Latency Percentiles</span>
+          </SectionHeading>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(14rem, 1fr))", gap: "1rem" }}>
+            <MetricCard label="P50 — Median" value={fmt(metrics?.p50)} accent="#6366f1" note="Typical response time" />
+            <MetricCard label="P95" value={fmt(metrics?.p95)} accent="#a855f7" note="95th percentile" />
+            <MetricCard label="P99 — Tail" value={fmt(metrics?.p99)} accent="#ec4899" note="Worst-case latency" />
+          </div>
+        </section>
+
+        {/* ── Traffic & health cards ── */}
+        <section aria-labelledby="traffic-heading">
+          <SectionHeading>
+            <span id="traffic-heading">Traffic &amp; Health</span>
+          </SectionHeading>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(14rem, 1fr))", gap: "1rem" }}>
             <MetricCard
-              label="P50 Latency"
-              value={fmt(metrics?.p50)}
-              accentColor={T.primary}
-              note="Typical response time"
-            />
-            <MetricCard
-              label="P95 Latency"
-              value={fmt(metrics?.p95)}
-              accentColor={T.primaryContainer}
-              note="95th percentile"
-            />
-            <MetricCard
-              label="P99 Latency"
-              value={fmt(metrics?.p99)}
-              accentColor="#665882"
-              note="Worst-case tail"
-            />
-            <MetricCard
-              label="Req. Count"
+              label="Request Count"
               value={metrics?.request_count ?? null}
               unit="req"
-              accentColor={T.primary}
-              note={`Over last ${windowLabel}`}
+              accent="#06b6d4"
+              note={`Over the last ${windowLabel}`}
             />
             <MetricCard
               label="Error Rate"
               value={fmt(metrics ? metrics.error_rate * 100 : null)}
               unit="%"
-              accentColor={metrics?.error_rate > 0.05 ? T.error : T.success}
-              note={
-                metrics?.error_rate > 0.05
-                  ? "⚠ Above 5 % threshold"
-                  : metrics != null
-                  ? "Within healthy range"
-                  : undefined
-              }
-              noteWarn={metrics?.error_rate > 0.05}
+              accent={metrics?.error_rate > 0.05 ? "#ef4444" : "#10b981"}
+              note={metrics?.error_rate > 0.05 ? "⚠ Above 5 % threshold" : "Within healthy range"}
             />
           </div>
         </section>
@@ -724,8 +676,8 @@ function ActivityRow({ row, alt }) {
         background: hovered
           ? "rgba(235,238,240,0.7)"
           : alt
-          ? "rgba(248,249,250,0.6)"
-          : "transparent",
+            ? "rgba(248,249,250,0.6)"
+            : "transparent",
         transition: "background 0.15s",
         fontSize: "var(--text-body, 0.875rem)",
         color: "#2d3335",
