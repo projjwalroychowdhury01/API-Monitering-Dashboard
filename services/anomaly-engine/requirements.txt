@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+clickhouse-driver
+pydantic
+pydantic-settings
+python-dotenv
+psycopg[binary]
