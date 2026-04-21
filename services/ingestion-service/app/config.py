@@ -1,23 +1,14 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+import sys
 
-class Settings(BaseSettings):
-    """
-    Base configuration for any microservice.
-    Overridable via environment variables or .env file.
-    """
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../shared_libraries/python")))
+
+from platform_lib.service_settings import CommonSettings
+
+
+class Settings(CommonSettings):
     SERVICE_NAME: str = "ingestion-service"
-    ENVIRONMENT: str = "development"
-    DEBUG: bool = False
-    PORT: int = 8000
+    PORT: int = 8001
 
-    # Kafka settings
-    KAFKA_BOOTSTRAP_SERVERS: str = "localhost:29092"
-    KAFKA_TOPIC_METRICS: str = "metrics_raw"
-
-    model_config = SettingsConfigDict(
-        env_file=".env", 
-        env_file_encoding="utf-8",
-        extra="ignore"
-    )
 
 settings = Settings()
