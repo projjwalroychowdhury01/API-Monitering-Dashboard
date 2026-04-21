@@ -17,8 +17,14 @@ def get_client() -> Client:
 
 
 def ensure_tables() -> None:
+    bootstrap_client = Client(
+        host=settings.CLICKHOUSE_HOST,
+        port=settings.CLICKHOUSE_PORT,
+        user=settings.CLICKHOUSE_USER,
+        password=settings.CLICKHOUSE_PASSWORD,
+    )
+    bootstrap_client.execute(f"CREATE DATABASE IF NOT EXISTS {settings.CLICKHOUSE_DB}")
     client = get_client()
-    client.execute(f"CREATE DATABASE IF NOT EXISTS {settings.CLICKHOUSE_DB}")
     statements = [
         """
         CREATE TABLE IF NOT EXISTS metrics_1m (

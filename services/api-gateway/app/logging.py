@@ -3,7 +3,7 @@ import sys
 from app.config import settings
 
 # Path to shared libraries
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../shared-libraries/python")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../shared_libraries/python")))
 
 try:
     from shared_logging.logger import get_logger
