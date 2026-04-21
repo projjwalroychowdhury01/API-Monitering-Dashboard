@@ -4,11 +4,19 @@ import { useEffect, useState } from "react";
 
 import { ConsoleShell } from "@/components/console-shell";
 import { Panel } from "@/components/panel";
-import { bootstrapDemoTenant, createDemoAlertRule, createDemoApiKey, listAlertRules, listApiKeys } from "@/lib/api";
+import {
+  type AlertRule,
+  type ApiKeyRecord,
+  bootstrapDemoTenant,
+  createDemoAlertRule,
+  createDemoApiKey,
+  listAlertRules,
+  listApiKeys,
+} from "@/lib/api";
 
 export default function SettingsPage() {
-  const [apiKeys, setApiKeys] = useState<any[]>([]);
-  const [rules, setRules] = useState<any[]>([]);
+  const [apiKeys, setApiKeys] = useState<ApiKeyRecord[]>([]);
+  const [rules, setRules] = useState<AlertRule[]>([]);
   const [lastCreatedKey, setLastCreatedKey] = useState<string>("");
 
   const load = async () => {
@@ -18,7 +26,16 @@ export default function SettingsPage() {
   };
 
   useEffect(() => {
-    void load();
+    let mounted = true;
+    void (async () => {
+      const [nextKeys, nextRules] = await Promise.all([listApiKeys(), listAlertRules()]);
+      if (!mounted) return;
+      setApiKeys(nextKeys);
+      setRules(nextRules);
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (

@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 
 import { ConsoleShell } from "@/components/console-shell";
 import { Panel } from "@/components/panel";
-import { createEventsSocket, getAnomalies, listAlertRules } from "@/lib/api";
+import { type AlertRule, type AnomalyRecord, type LiveEvent, createEventsSocket, getAnomalies, listAlertRules } from "@/lib/api";
 
 export default function AlertsPage() {
-  const [anomalies, setAnomalies] = useState<any[]>([]);
-  const [rules, setRules] = useState<any[]>([]);
-  const [events, setEvents] = useState<any[]>([]);
+  const [anomalies, setAnomalies] = useState<AnomalyRecord[]>([]);
+  const [rules, setRules] = useState<AlertRule[]>([]);
+  const [events, setEvents] = useState<LiveEvent[]>([]);
 
   useEffect(() => {
     void Promise.all([getAnomalies(), listAlertRules()]).then(([nextAnomalies, nextRules]) => {

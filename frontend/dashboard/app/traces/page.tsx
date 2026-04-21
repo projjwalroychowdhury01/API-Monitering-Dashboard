@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 
 import { ConsoleShell } from "@/components/console-shell";
 import { Panel } from "@/components/panel";
-import { getTraces } from "@/lib/api";
+import { type TraceSummary, getTraces } from "@/lib/api";
 
 export default function TracesPage() {
-  const [traces, setTraces] = useState<any[]>([]);
+  const [traces, setTraces] = useState<TraceSummary[]>([]);
 
   useEffect(() => {
     void getTraces().then(setTraces);

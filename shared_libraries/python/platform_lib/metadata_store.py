@@ -230,6 +230,12 @@ class MetadataStore:
                 cursor.execute(statement)
 
     def create_org(self, name: str, slug: str, description: str | None = None) -> Organization:
+        existing = self._fetchall(
+            f"SELECT * FROM organizations WHERE slug = {self.dialect.placeholder}",
+            (slug,),
+        )
+        if existing:
+            return Organization(**self._row_to_dict(existing[0]))
         org = Organization(id=slug, name=name, slug=slug, description=description, created_at=_utcnow())
         self._execute(
             "INSERT INTO organizations (id, name, slug, description, created_at) VALUES ({}, {}, {}, {}, {})".format(

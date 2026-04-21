@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 
 import { ConsoleShell } from "@/components/console-shell";
 import { Panel } from "@/components/panel";
-import { getLogs, getServiceGraph } from "@/lib/api";
+import { type LogRecord, type ServiceEdge, getLogs, getServiceGraph } from "@/lib/api";
 
 export default function ServicesPage() {
-  const [graph, setGraph] = useState<any[]>([]);
-  const [logs, setLogs] = useState<any[]>([]);
+  const [graph, setGraph] = useState<ServiceEdge[]>([]);
+  const [logs, setLogs] = useState<LogRecord[]>([]);
 
   useEffect(() => {
     void Promise.all([getServiceGraph(), getLogs()]).then(([nextGraph, nextLogs]) => {

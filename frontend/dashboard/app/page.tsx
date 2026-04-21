@@ -6,21 +6,30 @@ import { ConsoleShell } from "@/components/console-shell";
 import { LatencyHistoryChart } from "@/components/latency-history-chart";
 import { MetricCard } from "@/components/metric-card";
 import { Panel } from "@/components/panel";
-import { createEventsSocket, getAnomalies, getIncidents, getLatencyHistory, getLatencySnapshot, getServiceGraph, getTraces } from "@/lib/api";
-
-type LiveEvent = {
-  event_type: string;
-  payload: Record<string, unknown>;
-};
+import {
+  type AnomalyRecord,
+  type HistoryPoint,
+  type IncidentRecord,
+  type LiveEvent,
+  type ServiceEdge,
+  type TraceSummary,
+  createEventsSocket,
+  getAnomalies,
+  getIncidents,
+  getLatencyHistory,
+  getLatencySnapshot,
+  getServiceGraph,
+  getTraces,
+} from "@/lib/api";
 
 export default function OverviewPage() {
   const [endpointId] = useState("google-test");
   const [snapshot, setSnapshot] = useState({ p50: 0, p95: 0, p99: 0, request_count: 0, error_rate: 0 });
-  const [history, setHistory] = useState<any[]>([]);
-  const [traces, setTraces] = useState<any[]>([]);
-  const [incidents, setIncidents] = useState<any[]>([]);
-  const [anomalies, setAnomalies] = useState<any[]>([]);
-  const [graph, setGraph] = useState<any[]>([]);
+  const [history, setHistory] = useState<HistoryPoint[]>([]);
+  const [traces, setTraces] = useState<TraceSummary[]>([]);
+  const [incidents, setIncidents] = useState<IncidentRecord[]>([]);
+  const [anomalies, setAnomalies] = useState<AnomalyRecord[]>([]);
+  const [graph, setGraph] = useState<ServiceEdge[]>([]);
   const [events, setEvents] = useState<LiveEvent[]>([]);
 
   useEffect(() => {

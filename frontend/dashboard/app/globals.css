@@ -30,7 +30,7 @@ body {
     radial-gradient(circle at top left, rgba(0, 94, 184, 0.12), transparent 35%),
     linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
   color: var(--ink);
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: var(--font-body), system-ui, sans-serif;
 }
 
 a {
@@ -82,7 +82,7 @@ select {
 .brand-title,
 .page-title,
 .panel-title {
-  font-family: "Space Grotesk", "Inter", sans-serif;
+  font-family: var(--font-display), var(--font-body), sans-serif;
 }
 
 .brand-title {

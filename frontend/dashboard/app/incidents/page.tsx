@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 
 import { ConsoleShell } from "@/components/console-shell";
 import { Panel } from "@/components/panel";
-import { getIncidentTimeline, getIncidents, getRca } from "@/lib/api";
+import { type IncidentEvent, type IncidentRecord, type RcaResult, getIncidentTimeline, getIncidents, getRca } from "@/lib/api";
 
 export default function IncidentsPage() {
-  const [incidents, setIncidents] = useState<any[]>([]);
+  const [incidents, setIncidents] = useState<IncidentRecord[]>([]);
   const [selectedIncidentId, setSelectedIncidentId] = useState<string | null>(null);
-  const [timeline, setTimeline] = useState<any[]>([]);
-  const [rca, setRca] = useState<any | null>(null);
+  const [timeline, setTimeline] = useState<IncidentEvent[]>([]);
+  const [rca, setRca] = useState<RcaResult | null>(null);
 
   useEffect(() => {
     void getIncidents().then((data) => {
