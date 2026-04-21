@@ -1,35 +1,24 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
 import logging
+import os
+import sys
 
-class Settings(BaseSettings):
-    # Kafka
-    kafka_broker_url: str = Field(default="localhost:29092", env="KAFKA_BROKER_URL")
-    kafka_topic_raw: str = Field(default="metrics_raw", env="KAFKA_TOPIC_RAW")
-    kafka_group_id: str = Field(default="aggregation_service_group", env="KAFKA_GROUP_ID")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../shared_libraries/python")))
 
-    # ClickHouse
-    clickhouse_host: str = Field(default="localhost", env="CLICKHOUSE_HOST")
-    clickhouse_port: int = Field(default=9000, env="CLICKHOUSE_PORT")
-    clickhouse_db: str = Field(default="marketviz", env="CLICKHOUSE_DB")
-    clickhouse_user: str = Field(default="default", env="CLICKHOUSE_USER")
-    clickhouse_password: str = Field(default="", env="CLICKHOUSE_PASSWORD")
-    
-    # App config
-    log_level: str = Field(default="INFO", env="LOG_LEVEL")
-    aggregation_window_seconds: int = Field(default=30, env="AGGREGATION_WINDOW_SECONDS")
+from platform_lib.service_settings import CommonSettings
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore"
-    )
+
+class Settings(CommonSettings):
+    SERVICE_NAME: str = "aggregation-service"
+    PORT: int = 8003
+    KAFKA_GROUP_ID: str = "aggregation_service_group"
+    AGGREGATION_WINDOW_SECONDS: int = 30
+    LOG_LEVEL: str = "INFO"
+
 
 settings = Settings()
 
-# Configure logging
 logging.basicConfig(
-    level=getattr(logging, settings.log_level.upper()),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
-logger = logging.getLogger("aggregation-service")
+logger = logging.getLogger(settings.SERVICE_NAME)

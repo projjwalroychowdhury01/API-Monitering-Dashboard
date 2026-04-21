@@ -27,8 +27,12 @@ def _load_endpoints():
 
 class Settings(BaseSettings):
     SERVICE_NAME: str = "probe-workers"
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
+    TENANT_ID: str = os.getenv("TENANT_ID", "demo-tenant")
     REGION: str = os.getenv("REGION", "local-dev")
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+    INGEST_URL: str = os.getenv("INGEST_URL", "http://localhost:8001/ingest/metrics")
+    INGEST_API_KEY: str = os.getenv("INGEST_API_KEY", "")
 
     # The probe scheduler will read these endpoints and poll each one.
     ENDPOINTS: list[dict] = Field(default_factory=_load_endpoints)
