@@ -1,19 +1,9 @@
 from clickhouse_driver import Client
 
-from app.config import settings
-
-
 _client = None
-
 
 def get_client() -> Client:
     global _client
     if _client is None:
-        _client = Client(
-            host=settings.CLICKHOUSE_HOST,
-            port=settings.CLICKHOUSE_PORT,
-            user=settings.CLICKHOUSE_USER,
-            password=settings.CLICKHOUSE_PASSWORD,
-            database=settings.CLICKHOUSE_DB,
-        )
+        _client = Client(host='localhost', port=9000)
     return _client

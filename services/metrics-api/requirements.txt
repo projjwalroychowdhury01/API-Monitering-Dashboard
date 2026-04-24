@@ -3,6 +3,3 @@ uvicorn
 pydantic
 pydantic-settings
 python-dotenv
-clickhouse-driver
-redis
-psycopg[binary]

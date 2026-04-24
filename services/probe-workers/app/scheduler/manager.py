@@ -54,23 +54,25 @@ class ProbeScheduler:
         # In a real-world scenario, we'd send this to the Ingestion Gateway here.
 
     async def _send_telemetry(self, telemetry):
+        ingest_url ="http://127.0.0.1:8001/ingest/metrics"
+
         data = telemetry.model_dump()
         data["timestamp"] = int(data["timestamp"].timestamp())
+
         payload = [data]
-        headers = {}
-        if settings.INGEST_API_KEY:
-            headers["X-API-Key"] = settings.INGEST_API_KEY
 
         async with self.semaphore:   # 🔥 control concurrency
             try:
-                resp = await self.client.post(settings.INGEST_URL, json=payload, headers=headers)
+                resp = await self.client.post(ingest_url, json=payload)
+                print("STATUS:", resp.status_code)   # 👈 ADD
+                print("RESPONSE:", resp.text) 
                 
                 if resp.status_code >= 400:
                     log.debug(f"Telemetry POST returned status {resp.status_code}")
 
             except Exception as e:
                 log.debug("Telemetry POST failed (silent)")
-                print("HTTP ERROR:", str(e))
+                print("HTTP ERROR:", str(e)) 
 
     async def close(self):
         await self.client.aclose()
