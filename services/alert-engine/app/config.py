@@ -1,20 +1,27 @@
+# config.py
+# Runtime configuration for the Alert Engine.
+# Every value can be overridden via an environment variable.
+# No third-party libraries — stdlib os only.
+
 import os
-import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../shared_libraries/python")))
+# ---------------------------------------------------------------------------
+# Polling
+# ---------------------------------------------------------------------------
 
-from platform_lib.service_settings import CommonSettings
+# Seconds between each metrics poll cycle.
+POLL_INTERVAL: int = int(os.getenv("POLL_INTERVAL", "60"))
 
+# ---------------------------------------------------------------------------
+# Alert deduplication
+# ---------------------------------------------------------------------------
 
-class Settings(CommonSettings):
-    SERVICE_NAME: str = "alert-engine"
-    PORT: int = 8005
-    POLL_INTERVAL: int = 60
-    ALERT_COOLDOWN: int = 300
-    ALERT_WEBHOOK_URL: str | None = None
-    SMTP_HOST: str | None = None
-    SMTP_PORT: int = 25
-    SMTP_FROM: str = "alerts@localhost"
+# Seconds to suppress a repeated alert for the same (endpoint, type) pair.
+ALERT_COOLDOWN: int = int(os.getenv("ALERT_COOLDOWN", "300"))
 
+# ---------------------------------------------------------------------------
+# ClickHouse connection
+# ---------------------------------------------------------------------------
 
-settings = Settings()
+CLICKHOUSE_HOST: str = os.getenv("CLICKHOUSE_HOST", "localhost")
+CLICKHOUSE_PORT: int = int(os.getenv("CLICKHOUSE_PORT", "9000"))

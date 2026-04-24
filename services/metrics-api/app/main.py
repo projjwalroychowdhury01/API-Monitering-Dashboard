@@ -1,34 +1,43 @@
+import os
 import traceback
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.config import settings
-from app.dependencies import get_store
-from app.routes.health import router as health_router
-from app.routes.metrics import router as metrics_router
-from app.routes.platform import router as platform_router
-
-
 app = FastAPI(
     title="Metrics API",
-    description="Query-plane API for observability metrics, traces, and incidents.",
-    version="0.2.0",
+    description="API for fetching observability metrics",
+    version="1.0.0"
 )
+
+# Enforce secure CORS policy: whitelist only trusted domains from environment
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
+allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["*"],
 )
 
+# Include the metrics router — surface import errors immediately
 try:
-    get_store().ensure_schema()
-    app.include_router(health_router)
+    from app.routes.metrics import router as metrics_router
     app.include_router(metrics_router)
-    app.include_router(platform_router)
 except Exception:
+    # Print full traceback so the cause is visible in the uvicorn terminal
     traceback.print_exc()
-    raise RuntimeError("Failed to load metrics/query routers. Check the traceback above for the root cause.")
+    raise RuntimeError(
+        "Failed to load metrics router. "
+        "Check the traceback above for the root cause."
+    )
+
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "success",
+        "data": {
+            "status": "healthy"
+        }
+    }

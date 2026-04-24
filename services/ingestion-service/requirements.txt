@@ -4,5 +4,3 @@ pydantic
 pydantic-settings
 python-dotenv
 kafka-python
-redis
-psycopg[binary]

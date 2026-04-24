@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-clickhouse-driver
-pydantic
-pydantic-settings
-python-dotenv
-httpx
-redis
-psycopg[binary]

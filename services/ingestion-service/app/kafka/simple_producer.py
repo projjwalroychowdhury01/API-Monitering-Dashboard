@@ -1,17 +1,29 @@
+from kafka import KafkaProducer #type: ignore
 import json
+from typing import Dict, Any
 
-from kafka import KafkaProducer  # type: ignore
+producer = None
 
-from app.config import settings
-
+def init_producer():
+    global producer
+    producer = KafkaProducer(
+        bootstrap_servers="localhost:29092",
+        value_serializer=lambda v: json.dumps(v).encode("utf-8"),  #type: ignore
+        api_version=(0, 10)
+    )
 
 def create_producer() -> KafkaProducer:
     return KafkaProducer(
-        bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
-        value_serializer=lambda v: json.dumps(v, default=str).encode("utf-8"),  # type: ignore
-        api_version=(0, 10),
+        bootstrap_servers="localhost:29092",
+        value_serializer=lambda v: json.dumps(v).encode("utf-8"),#type: ignore
+        api_version=(0, 10)
     )
 
+def get_producer():
+    return producer
 
-def send_event(producer: KafkaProducer, topic: str, payload: dict) -> None:
-    producer.send(topic, payload).get(timeout=10)
+def send_metric(metric: Dict[str, Any]) -> None:
+    if producer is None:
+        init_producer()
+    producer.send("metrics_raw", metric) # type: ignore
+    producer.flush() # type: ignore
